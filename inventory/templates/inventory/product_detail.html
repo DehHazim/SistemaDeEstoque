@@ -1,0 +1,71 @@
+{% extends 'inventory/base.html' %}
+
+{% block page_title %}{{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <a href="{% url 'product_list' %}" class="text-blue-600 hover:underline mb-6 flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Voltar para Produtos
+    </a>
+
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6 text-white">
+            <h1 class="text-4xl font-bold">{{ object.name }}</h1>
+            <p class="text-blue-100 mt-2">Criado em {{ object.created_at|date:"d/m/Y H:i" }}</p>
+        </div>
+
+        <div class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card bg-gray-50 p-6 rounded-lg">
+                    <p class="text-sm text-gray-500 uppercase tracking-wide">Descrição</p>
+                    <p class="text-lg text-gray-800 mt-2">{{ object.description|default:"Sem descrição" }}</p>
+                </div>
+
+                <div class="card bg-gray-50 p-6 rounded-lg">
+                    <p class="text-sm text-gray-500 uppercase tracking-wide">Categoria</p>
+                    <p class="text-lg text-gray-800 mt-2 font-semibold">{{ object.category }}</p>
+                </div>
+
+                <div class="card bg-blue-50 p-6 rounded-lg">
+                    <p class="text-sm text-gray-500 uppercase tracking-wide">Quantidade</p>
+                    <p class="text-3xl font-bold text-blue-600 mt-2">{{ object.quantity }} unid.</p>
+                </div>
+
+                <div class="card bg-green-50 p-6 rounded-lg">
+                    <p class="text-sm text-gray-500 uppercase tracking-wide">Preço Unitário</p>
+                    <p class="text-3xl font-bold text-green-600 mt-2">R$ {{ object.price }}</p>
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <p class="text-sm text-gray-500">Última atualização: {{ object.updated_at|date:"d/m/Y H:i" }}</p>
+            </div>
+
+            <div class="flex gap-4">
+                <a href="{% url 'product_update' object.pk %}" class="btn-primary text-white px-6 py-3 rounded-lg flex items-center gap-2">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <button onclick="openModal('deleteConfirmModal')" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition flex items-center gap-2">
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmação -->
+    <div id="deleteConfirmModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 w-96">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Confirmar Exclusão</h3>
+            <p class="text-gray-600 mb-6">Tem certeza que deseja excluir este produto?</p>
+            <div class="flex gap-4">
+                <a href="{% url 'product_delete' object.pk %}" class="flex-1 bg-red-600 text-white px-4 py-3 rounded hover:bg-red-700 transition text-center font-semibold">
+                    Excluir
+                </a>
+                <button onclick="closeModal('deleteConfirmModal')" class="flex-1 bg-gray-300 text-gray-800 px-4 py-3 rounded hover:bg-gray-400 transition font-semibold">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

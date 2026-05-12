@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Estoque{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh; 
+            color: #1e293b;
+        }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            box-shadow: 4px 0 30px rgba(15, 23, 42, 0.3);
+            border-right: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .sidebar-item { 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: 12px;
+        }
+        
+        .sidebar-item:hover { 
+            background: rgba(59, 130, 246, 0.15);
+            transform: translateX(8px);
+            border-left: 3px solid #3b82f6;
+            padding-left: calc(0.75rem - 3px);
+        }
+        
+        .card { 
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+        }
+        
+        .card:hover { 
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-primary { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.45);
+        }
+        
+        .btn-primary:active { 
+            transform: translateY(-1px);
+        }
+        
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        
+        @keyframes fadeIn { 
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .modal { display: none; }
+        .modal.active { display: flex; }
+        
+        header {
+            background: linear-gradient(90deg, #ffffff 0%, #f8fafc 100%);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+        }
+        
+        main {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.02) 0%, rgba(59, 130, 246, 0.03) 100%);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .stat-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+        }
+        
+        table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        input, select, textarea {
+            border: 1px solid rgba(148, 163, 184, 0.2) !important;
+            border-radius: 12px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+        
+        .badge {
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-900">
+    <div class="flex h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 text-white flex flex-col">
+            <div class="p-6 border-b border-gray-700">
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    <i class="fas fa-boxes text-blue-500"></i> EstoqueApp
+                </h1>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="{% url 'product_list' %}" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-gray-300">
+                    <i class="fas fa-list w-5"></i> Produtos
+                </a>
+                <a href="{% url 'category_list' %}" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-gray-300">
+                    <i class="fas fa-tags w-5"></i> Categorias
+                </a>
+                <a href="{% url 'admin:index' %}" target="_blank" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-gray-300">
+                    <i class="fas fa-cog w-5"></i> Admin
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-700 text-sm text-gray-400">
+                <p>Sistema v1.0</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800">{% block page_title %}Dashboard{% endblock %}</h2>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleDarkMode()" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-moon text-gray-600"></i>
+                    </button>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-user-circle text-2xl"></i>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 overflow-auto p-8">
+                <div class="fade-in">
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded">
+                            <p>{{ message }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Busca em tempo real
+        function filterTable(input, tableId) {
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            }
+        }
+
+        // Dark mode persistente
+        if (localStorage.getItem('darkMode') === 'true') {
+            toggleDarkMode();
+        }
+    </script>
+</body>
+</html>
